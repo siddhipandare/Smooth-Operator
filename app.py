@@ -3,7 +3,7 @@ from flask import Flask
 # Import render_template to render HTML templates
 from flask import render_template
 
-from utils import fetch_time_series, get_all_datasets, new_approach
+from utils import fetch_time_series, get_all_datasets, new_approach, new_approach_app_ent
 
 filename_to_type = {
     'taxi.csv': 'csv',
@@ -32,7 +32,7 @@ def visualize(filename):
 @app.route('/analyze/<filename>')
 def analyze(filename):
     time_series = fetch_time_series(filename, type=filename_to_type[filename])
-    snr_series, partitions = new_approach(time_series)
+    snr_series, partitions = new_approach_with_app_ent(time_series)
     dataset_list = get_all_datasets()
     return render_template('analyze.html', time_series=time_series, partitions=partitions, dataset_list=dataset_list, snr_series=snr_series)
 

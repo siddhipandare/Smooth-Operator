@@ -3,6 +3,7 @@ import numpy as np
 import os
 import glob
 import json
+import antropy as ant
 
 BASE_DIR = './8803-MDS-Project/datasets'
 
@@ -68,3 +69,36 @@ def new_approach(time_series):
 
     # Return the snr_list and the partitions
     return snr_list.tolist(), partition.tolist()
+
+def new_approach_app_ent(time_series):
+    '''
+    New approach to time series smoothing with app ent
+    '''
+    # Convert to numpy array
+    time_series = np.array(time_series)
+    window_length = int(0.1 * len(time_series))
+    app_ent_list = np.array([])
+
+    for i in range(0, len(time_series) - window_length):
+        window = time_series[i:i+window_length]
+        app_ent = ant.app_entropy(window, 2)
+        app_ent_list = np.append(app_ent_list, app_ent)
+    
+    # Scale the app_ent_list to fit between 0 and 3
+    app_ent_list = (app_ent_list - np.min(app_ent_list)) / (np.max(app_ent_list) - np.min(app_ent_list)) * 3
+
+    total_area = np.trapz(app_ent_list)
+
+    # Find partitions in the app_ent_list such that area under the curve for each partition is equal to total_area / 5
+    no_of_partitions = 6
+    partition = np.array([])
+    left = 0
+    right = 0
+    while right < len(app_ent_list):
+        if np.trapz(app_ent_list[left:right]) > total_area / no_of_partitions:
+            partition = np.append(partition, right)
+            left = right
+        right += 1
+
+    # Return the app_ent_list and the partitions
+    return app_ent_list.tolist(), partition.tolist()
