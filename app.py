@@ -13,6 +13,7 @@ filename_to_type = {
     'eeg_chan20_2500.json': 'json',
     'chi_homicide_monthly.json': 'json',
     'stock_tsla_price.json': 'json',
+    'power.csv': 'csv',
 }
 
 app = Flask(__name__)
