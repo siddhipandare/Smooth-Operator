@@ -14,6 +14,7 @@ filename_to_type = {
     'chi_homicide_monthly.json': 'json',
     'stock_tsla_price.json': 'json',
     'power.csv': 'csv',
+    'sine.csv': 'csv',
 }
 
 app = Flask(__name__)
