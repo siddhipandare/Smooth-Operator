@@ -169,32 +169,32 @@
                 smoothed_time_series.push(sum / smoothing_value);
             }
 
-            // var snr_smoothed_time_series = [];
-            // var window_length = parseInt(0.1 * smoothed_time_series.length);
-            // // At every window_length, calculate SNR of the window and add to snr_smoothed_time_series
-            // // SNR is square of (mean of window / standard deviation of window)
-            // for (var i = window_length; i < smoothed_time_series.length; i += 1) {
-            //     var sum = 0;
-            //     for (var j = i - window_length; j < i; j++) {
-            //         sum += smoothed_time_series[j];
-            //     }
-            //     var mean = sum / window_length;
-            //     var sum_squared = 0;
-            //     for (var j = i - window_length; j < i; j++) {
-            //         sum_squared += Math.pow(smoothed_time_series[j] - mean, 2);
-            //     }
-            //     var std_dev = Math.sqrt(sum_squared / window_length);
-            //     snr_smoothed_time_series.push(Math.pow(mean / std_dev, 2));
-            // }
+            var snr_smoothed_time_series = [];
+            var window_length = parseInt(0.1 * smoothed_time_series.length);
+            // At every window_length, calculate SNR of the window and add to snr_smoothed_time_series
+            // SNR is square of (mean of window / standard deviation of window)
+            for (var i = window_length; i < smoothed_time_series.length; i += 1) {
+                var sum = 0;
+                for (var j = i - window_length; j < i; j++) {
+                    sum += smoothed_time_series[j];
+                }
+                var mean = sum / window_length;
+                var sum_squared = 0;
+                for (var j = i - window_length; j < i; j++) {
+                    sum_squared += Math.pow(smoothed_time_series[j] - mean, 2);
+                }
+                var std_dev = Math.sqrt(sum_squared / window_length);
+                snr_smoothed_time_series.push(Math.pow(mean / std_dev, 2));
+            }
 
-            // // Normalize snr_smoothed_time_series to be between 0 and 3
-            // var max_snr = Math.max(...snr_smoothed_time_series);
-            // var min_snr = Math.min(...snr_smoothed_time_series);
+            // Normalize snr_smoothed_time_series to be between 0 and 3
+            var max_snr = Math.max(...snr_smoothed_time_series);
+            var min_snr = Math.min(...snr_smoothed_time_series);
             
-            // // Apply lambda function to each element of snr_smoothed_time_series
-            // snr_smoothed_time_series = snr_smoothed_time_series.map(function(x) {
-            //     return 3 * (x - min_snr) / (max_snr - min_snr);
-            // });
+            // Apply lambda function to each element of snr_smoothed_time_series
+            snr_smoothed_time_series = snr_smoothed_time_series.map(function(x) {
+                return 3 * (x - min_snr) / (max_snr - min_snr);
+            });
 
             // Get max value of elements in time_series
             var max_value = -1000;
@@ -249,15 +249,15 @@
                     )
 
             // Add the line for SNR
-            // svg.append("path")
-            //     .datum(snr_smoothed_time_series)
-            //     .attr("fill", "none")
-            //     .attr("stroke", "orange")
-            //     .attr("stroke-width", 1.5)
-            //     .attr("d", d3.line()
-            //         .x(function(d, i) { return x(i) })
-            //         .y(function(d) { return y(d) })
-            //         )
+            svg.append("path")
+                .datum(snr_smoothed_time_series)
+                .attr("fill", "none")
+                .attr("stroke", "orange")
+                .attr("stroke-width", 1.5)
+                .attr("d", d3.line()
+                    .x(function(d, i) { return x(i) })
+                    .y(function(d) { return y(d) })
+                    )
 
         }
 
