@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <!-- Fetch d3 -->
+        <script src="https://d3js.org/d3.v4.min.js"></script>
+        <!-- Fetch jQuery -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <!-- Fetch Bootstrap -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    </head>
+    <body style="padding:5%; text-align: center;">
+        <div id="chart">
+            <div id="decrement_slider"></div>
+            <div id="increment_slider"></div>
+            <div id="smoothing_slider"></div>
+            <div id="window_length"></div>
+        </div>
+        <div id="dataset_dropdown">
+            <h3>Select dataset</h3>
+        </div>
+        <div id="analyze_btn">
+            <button type="button" class="btn btn-primary" onclick="analyze()">Analyze</button>
+        </div>
+    </body>
+    <script>
+        // Fetch time series from jinja2
+        var time_series = {{ time_series|tojson }};
+        // Fetch dataset names from jinja2
+        var dataset_list = {{ dataset_list|tojson }};
+
+        // Populate dataset list as a dropdown
+        var dataset_dropdown = d3.select("#dataset_dropdown")
+            .append("select")
+            .attr("id", "dataset_dropdown_select")
+            .on("change", function(d) {
+                var selected_dataset = d3.select(this).property("value");
+                // Redirection to visualize page with selected dataset
+                console.log(selected_dataset);
+                window.location.href = "/visualize/" + selected_dataset;
+            });
+        // Add options to dropdown
+        dataset_dropdown.selectAll("option")
+            .data(dataset_list)
+            .enter()
+            .append("option")
+            .attr("value", function(d) { return d; })
+            .text(function(d) { return d; });
+        // Set default value of dropdown to none
+        dataset_dropdown.property("value", "none");
+        
+
+
+        // set the dimensions and margins of the graph
+        var margin = {top: 10, right: 30, bottom: 30, left: 60},
+            width = 900 - margin.left - margin.right,
+            height = 400 - margin.top - margin.bottom;
+
+        // Get max value of elements in time_series
+        var max_value = -1000;
+        var min_value = +1000;
+        for (var i = 0; i < time_series.length; i++) {
+            if (time_series[i] > max_value) {
+                max_value = time_series[i];
+            }
+            if (time_series[i] < min_value) {
+                min_value = time_series[i];
+            }
+        }
+
+        // append the svg object to the body of the page
+        var svg = d3.select("#chart")
+        .append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+            .attr("transform",
+                "translate(" + margin.left + "," + margin.top + ")");
+
+        // Add the X axis with labels
+        var x = d3.scaleLinear()
+            .domain([0, time_series.length])
+            .range([ 0, width ]);
+        svg.append("g")
+            .attr("transform", "translate(0," + height + ")")
+            .call(d3.axisBottom(x));
+
+
+        // Add the Y axis with labels
+        var y = d3.scaleLinear()
+            .domain([-3, 3])
+            .range([ height, 0]);
+        svg.append("g")
+            .call(d3.axisLeft(y));
+
+        // Add the line
+        svg.append("path")
+            .datum(time_series)
+            .attr("fill", "none")
+            .attr("stroke", "steelblue")
+            .attr("stroke-width", 1.5)
+            .attr("d", d3.line()
+                .x(function(d, i) { return x(i) })
+                .y(function(d) { return y(d) })
+                )
+
+        // Add the smoothing slider
+        var smoothing_slider = d3.select("#smoothing_slider")
+            .append("input")
+            .attr("type", "range")
+            .attr("min", 0)
+            .attr("max", 0.5 * time_series.length)
+            .attr("value", 0)
+            .attr("class", "slider")
+            .attr("id", "smoothing_slider_input")
+            .on("input", function() {
+                var window_length = d3.select("#smoothing_slider_input").property("value");
+                d3.select("#window_length").text("Window length: " + window_length);
+                updateChart(this.value);
+            });
+
+        // Add the increment slider button
+        var increment_slider = d3.select("#increment_slider")
+            .append("button")
+            .attr("type", "button")
+            .attr("class", "btn btn-sm btn-outline-secondary")
+            .attr("id", "increment_slider_button")
+            .text("Increment smoothing")
+            .on("click", function() {
+                // Set value of smoothing slider to current value + 1
+                var current_value = d3.select("#smoothing_slider_input").property("value");
+                d3.select("#smoothing_slider_input").property("value", parseInt(current_value) + 1);
+                // Update window length text
+                var window_length = d3.select("#smoothing_slider_input").property("value");
+                d3.select("#window_length").text("Window length: " + window_length);
+                // Update chart
+                updateChart(parseInt(current_value) + 1);
+            });
+
+        // Add the decrement slider button
+        var decrement_slider = d3.select("#decrement_slider")
+            .append("button")
+            .attr("type", "button")
+            .attr("class", "btn btn-sm btn-outline-secondary")
+            .attr("id", "decrement_slider_button")
+            .text("Decrement smoothing")
+            .on("click", function() {
+                // Set value of smoothing slider to current value - 1
+                var current_value = d3.select("#smoothing_slider_input").property("value");
+                d3.select("#smoothing_slider_input").property("value", parseInt(current_value) - 1);
+                // Update window length text
+                var window_length = d3.select("#smoothing_slider_input").property("value");
+                d3.select("#window_length").text("Window length: " + window_length);
+                // Update chart
+                updateChart(parseInt(current_value) - 1);
+            });
+
+        
+
+        // Update chart with new smoothing value
+        function updateChart(smoothing_value) {
+
+            // Use simple moving average with smoothing_value as window size
+            var smoothed_time_series = [];
+            for (var i = smoothing_value; i < time_series.length; i++) {
+                var sum = 0;
+                for (var j = i - smoothing_value; j < i; j++) {
+                    sum += time_series[j];
+                }
+                smoothed_time_series.push(sum / smoothing_value);
+            }
+
+            // var snr_smoothed_time_series = [];
+            // var window_length = parseInt(0.1 * smoothed_time_series.length);
+            // // At every window_length, calculate SNR of the window and add to snr_smoothed_time_series
+            // // SNR is square of (mean of window / standard deviation of window)
+            // for (var i = window_length; i < smoothed_time_series.length; i += 1) {
+            //     var sum = 0;
+            //     for (var j = i - window_length; j < i; j++) {
+            //         sum += smoothed_time_series[j];
+            //     }
+            //     var mean = sum / window_length;
+            //     var sum_squared = 0;
+            //     for (var j = i - window_length; j < i; j++) {
+            //         sum_squared += Math.pow(smoothed_time_series[j] - mean, 2);
+            //     }
+            //     var std_dev = Math.sqrt(sum_squared / window_length);
+            //     snr_smoothed_time_series.push(Math.pow(mean / std_dev, 2));
+            // }
+
+            // // Normalize snr_smoothed_time_series to be between 0 and 3
+            // var max_snr = Math.max(...snr_smoothed_time_series);
+            // var min_snr = Math.min(...snr_smoothed_time_series);
+            
+            // // Apply lambda function to each element of snr_smoothed_time_series
+            // snr_smoothed_time_series = snr_smoothed_time_series.map(function(x) {
+            //     return 3 * (x - min_snr) / (max_snr - min_snr);
+            // });
+
+            // Get max value of elements in time_series
+            var max_value = -1000;
+            var min_value = +1000;
+            for (var i = 0; i < smoothed_time_series.length; i++) {
+                if (smoothed_time_series[i] > max_value) {
+                    max_value = smoothed_time_series[i];
+                }
+                if (smoothed_time_series[i] < min_value) {
+                    min_value = smoothed_time_series[i];
+                }
+            }
+
+            // Clear chart
+            d3.select("#chart").select("svg").remove();
+
+            // Redraw chart
+            // append the svg object to the body of the page
+            var svg = d3.select("#chart")
+            .append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+                .attr("transform",
+                    "translate(" + margin.left + "," + margin.top + ")");
+
+            // Add the X axis with labels
+            var x = d3.scaleLinear()
+                .domain([0, smoothed_time_series.length])
+                .range([ 0, width ]);
+            svg.append("g")
+                .attr("transform", "translate(0," + height + ")")
+                .call(d3.axisBottom(x));
+
+
+            // Add the Y axis with labels
+            var y = d3.scaleLinear()
+                .domain([-3, 3])
+                .range([ height, 0]);
+            svg.append("g")
+                .call(d3.axisLeft(y));
+
+            // Add the line
+            svg.append("path")
+                .datum(smoothed_time_series)
+                .attr("fill", "none")
+                .attr("stroke", "steelblue")
+                .attr("stroke-width", 1.5)
+                .attr("d", d3.line()
+                    .x(function(d, i) { return x(i) })
+                    .y(function(d) { return y(d) })
+                    )
+
+            // Add the line for SNR
+            // svg.append("path")
+            //     .datum(snr_smoothed_time_series)
+            //     .attr("fill", "none")
+            //     .attr("stroke", "orange")
+            //     .attr("stroke-width", 1.5)
+            //     .attr("d", d3.line()
+            //         .x(function(d, i) { return x(i) })
+            //         .y(function(d) { return y(d) })
+            //         )
+
+        }
+
+        function analyze() {
+            // Redirect to current URL but with "visualize" replaced by "analyze"
+            var url = window.location.href;
+            var new_url = url.replace("visualize", "analyze");
+            window.location.href = new_url;
+        }
+
+
+    </script>
+</html>
