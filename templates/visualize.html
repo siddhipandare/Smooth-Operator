@@ -18,9 +18,6 @@
         <div id="dataset_dropdown">
             <h3>Select dataset</h3>
         </div>
-        <div id="analyze_btn">
-            <button type="button" class="btn btn-primary" onclick="analyze()">Analyze</button>
-        </div>
     </body>
     <script>
         // Fetch time series from jinja2
@@ -169,50 +166,11 @@
                 smoothed_time_series.push(sum / smoothing_value);
             }
 
-            var snr_smoothed_time_series = [];
-            var window_length = parseInt(0.1 * smoothed_time_series.length);
-            // At every window_length, calculate SNR of the window and add to snr_smoothed_time_series
-            // SNR is square of (mean of window / standard deviation of window)
-            for (var i = window_length; i < smoothed_time_series.length; i += 1) {
-                var sum = 0;
-                for (var j = i - window_length; j < i; j++) {
-                    sum += smoothed_time_series[j];
-                }
-                var mean = sum / window_length;
-                var sum_squared = 0;
-                for (var j = i - window_length; j < i; j++) {
-                    sum_squared += Math.pow(smoothed_time_series[j] - mean, 2);
-                }
-                var std_dev = Math.sqrt(sum_squared / window_length);
-                snr_smoothed_time_series.push(Math.pow(mean / std_dev, 2));
-            }
-
-            // Normalize snr_smoothed_time_series to be between 0 and 3
-            var max_snr = Math.max(...snr_smoothed_time_series);
-            var min_snr = Math.min(...snr_smoothed_time_series);
+            // Get window_length as 10% of smoothed time_series length
+            var window_length = Math.floor(smoothed_time_series.length / 10);
+            // Make window_length as integer
+            window_length = parseInt(window_length);
             
-            // Apply lambda function to each element of snr_smoothed_time_series
-            snr_smoothed_time_series = snr_smoothed_time_series.map(function(x) {
-                return 3 * (x - min_snr) / (max_snr - min_snr);
-            });
-
-            // Get max value of elements in time_series
-            var max_value = -1000;
-            var min_value = +1000;
-            for (var i = 0; i < smoothed_time_series.length; i++) {
-                if (smoothed_time_series[i] > max_value) {
-                    max_value = smoothed_time_series[i];
-                }
-                if (smoothed_time_series[i] < min_value) {
-                    min_value = smoothed_time_series[i];
-                }
-            }
-
-            // Clear chart
-            d3.select("#chart").select("svg").remove();
-
-            // Redraw chart
-            // append the svg object to the body of the page
             var svg = d3.select("#chart")
             .append("svg")
                 .attr("width", width + margin.left + margin.right)
@@ -220,6 +178,60 @@
             .append("g")
                 .attr("transform",
                     "translate(" + margin.left + "," + margin.top + ")");
+
+            // Make post call with fetch API to localhost:5000/fetch_running_snr with smoothed_time_series in body with key "time_series" and window_length in body with key "window_length"
+            // When response is received, store response in snr_smoothed_time_series and put it in the chart
+            fetch("http://localhost:5000/fetch_running_snr", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({"time_series": smoothed_time_series, "window_length": window_length})
+            })
+            .then(response => response.json())
+            .then(data => {
+                snr_smoothed_time_series = data["snr_time_series"];
+                // Update chart
+                // Add the line for SNR
+                svg.append("path")
+                    .datum(snr_smoothed_time_series)
+                    .attr("fill", "none")
+                    .attr("stroke", "orange")
+                    .attr("stroke-width", 1.5)
+                    .attr("d", d3.line()
+                        .x(function(d, i) { return x(i) })
+                        .y(function(d) { return y(d) })
+                        )
+            });
+
+            // Make post call with fetch API to localhost:5000/fetch_running_entropy with smoothed_time_series in body with key "time_series" and window_length in body with key "window_length"
+            // When response is received, store response in entropy_smoothed_time_series and put it in the chart
+            fetch("http://localhost:5000/fetch_running_entropy", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({"time_series": smoothed_time_series, "window_length": window_length})
+            })
+            .then(response => response.json())
+            .then(data => {
+                entropy_smoothed_time_series = data["entropy_time_series"];
+                // Update chart
+                // Add the line for entropy
+                svg.append("path")
+                    .datum(entropy_smoothed_time_series)
+                    .attr("fill", "none")
+                    .attr("stroke", "green")
+                    .attr("stroke-width", 1.5)
+                    .attr("d", d3.line()
+                        .x(function(d, i) { return x(i) })
+                        .y(function(d) { return y(d) })
+                        )
+            });
+            // Clear chart
+            d3.select("#chart").select("svg").remove();
+
+            
 
             // Add the X axis with labels
             var x = d3.scaleLinear()
@@ -248,24 +260,6 @@
                     .y(function(d) { return y(d) })
                     )
 
-            // Add the line for SNR
-            svg.append("path")
-                .datum(snr_smoothed_time_series)
-                .attr("fill", "none")
-                .attr("stroke", "orange")
-                .attr("stroke-width", 1.5)
-                .attr("d", d3.line()
-                    .x(function(d, i) { return x(i) })
-                    .y(function(d) { return y(d) })
-                    )
-
-        }
-
-        function analyze() {
-            // Redirect to current URL but with "visualize" replaced by "analyze"
-            var url = window.location.href;
-            var new_url = url.replace("visualize", "analyze");
-            window.location.href = new_url;
         }
 
 

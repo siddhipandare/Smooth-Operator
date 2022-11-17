@@ -3,7 +3,6 @@ import numpy as np
 import os
 import glob
 import json
-import antropy as ant
 
 BASE_DIR = './8803-MDS-Project/datasets'
 
@@ -36,69 +35,66 @@ def get_all_datasets():
     filenames = [os.path.basename(path) for path in full_paths]
     return filenames
     
-def new_approach(time_series):
+def get_entropy_series(time_series, window_length):
     '''
-    New approach to time series smoothing
+    Time series: a list of values
+    window_length: length of running window to be used
     '''
-    # Convert to numpy array
     time_series = np.array(time_series)
-    window_length = int(0.1 * len(time_series))
-    snr_list = np.array([])
+    entropy_series = np.array([])
 
-    for i in range(0, len(time_series) - window_length):
-        window = time_series[i:i+window_length]
-        snr = np.mean(window) / np.std(window)
-        snr **= 2
-        snr_list = np.append(snr_list, snr)
-    
-    # Scale the snr_list to fit between 0 and 3
-    snr_list = (snr_list - np.min(snr_list)) / (np.max(snr_list) - np.min(snr_list)) * 3
+    for i in range(len(time_series) - window_length):
+        # Get deep copy of the window
+        window = time_series[i:i+window_length].copy()
 
-    total_area = np.trapz(snr_list)
+        # Get span of the time series and discretize values to 10 bins
+        bins = np.linspace(np.min(time_series), np.max(time_series), 30)
 
-    # Find partitions in the snr_list such that area under the curve for each partition is equal to total_area / 5
-    no_of_partitions = 6
-    partition = np.array([])
-    left = 0
-    right = 0
-    while right < len(snr_list):
-        if np.trapz(snr_list[left:right]) > total_area / no_of_partitions:
-            partition = np.append(partition, right)
-            left = right
-        right += 1
+        # Get histogram of the window
+        hist, _ = np.histogram(window, bins=bins)
 
-    # Return the snr_list and the partitions
-    return snr_list.tolist(), partition.tolist()
+        # Add 1 to each bin to avoid division by zero
+        hist = hist + 1
 
-def new_approach_app_ent(time_series):
+        # Get probability distribution of the window
+        prob_dist = hist / np.sum(hist)
+
+        # Get entropy of the window
+        entropy = -np.sum(prob_dist * np.log2(prob_dist))
+
+        # Append the entropy to the entropy series
+        entropy_series = np.append(entropy_series, entropy)
+
+    # Scale the entropy series to fit between 0 and 3
+    entropy_series = (entropy_series - np.min(entropy_series)) / (np.max(entropy_series) - np.min(entropy_series)) * 3
+    return entropy_series.tolist()
+
+def get_snr_series(time_series, window_length):
     '''
-    New approach to time series smoothing with app ent
+    Time series: a list of values
+    window_length: length of running window to be used
     '''
-    # Convert to numpy array
     time_series = np.array(time_series)
-    window_length = int(0.1 * len(time_series))
-    app_ent_list = np.array([])
+    snr_series = np.array([])
+    for i in range(len(time_series) - window_length):
+        # Get deep copy of the window
+        window = time_series[i:i+window_length].copy()
 
-    for i in range(0, len(time_series) - window_length):
-        window = time_series[i:i+window_length]
-        app_ent = ant.app_entropy(window, 2)
-        app_ent_list = np.append(app_ent_list, app_ent)
-    
-    # Scale the app_ent_list to fit between 0 and 3
-    app_ent_list = (app_ent_list - np.min(app_ent_list)) / (np.max(app_ent_list) - np.min(app_ent_list)) * 3
+        # Get standard deviation of the window
+        std = np.std(window)
 
-    total_area = np.trapz(app_ent_list)
+        # Get mean of the window
+        mean = np.mean(window)
 
-    # Find partitions in the app_ent_list such that area under the curve for each partition is equal to total_area / 5
-    no_of_partitions = 6
-    partition = np.array([])
-    left = 0
-    right = 0
-    while right < len(app_ent_list):
-        if np.trapz(app_ent_list[left:right]) > total_area / no_of_partitions:
-            partition = np.append(partition, right)
-            left = right
-        right += 1
+        # Get signal to noise ratio of the window
+        snr = mean / std
 
-    # Return the app_ent_list and the partitions
-    return app_ent_list.tolist(), partition.tolist()
+        # Square the signal to noise ratio
+        snr = snr ** 2
+
+        # Append the signal to noise ratio to the signal to noise ratio series
+        snr_series = np.append(snr_series, snr)
+
+    # Scale the signal to noise ratio series to fit between 0 and 3
+    snr_series = (snr_series - np.min(snr_series)) / (np.max(snr_series) - np.min(snr_series)) * 3
+    return snr_series.tolist()
