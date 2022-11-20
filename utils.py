@@ -22,7 +22,7 @@ def fetch_time_series(filename, type):
         raise ValueError('Invalid type')
 
     # Z-normalize time series
-    time_series = (time_series - np.mean(time_series)) / np.std(time_series)
+    # time_series = (time_series - np.mean(time_series)) / np.std(time_series)
 
     # Return time series as a python list
     return time_series.tolist()
@@ -98,3 +98,24 @@ def get_snr_series(time_series, window_length):
     # Scale the signal to noise ratio series to fit between 0 and 3
     snr_series = (snr_series - np.min(snr_series)) / (np.max(snr_series) - np.min(snr_series)) * 3
     return snr_series.tolist()
+
+def get_detrended_time_series(time_series, window_length):
+    time_series = np.array(time_series)
+    sma_series = np.array([])
+
+    for i in range(len(time_series) - window_length):
+        # Get a deep copy of the window
+        window = time_series[i:i+window_length].copy()
+        
+        # Get the sma of the window
+        sma = np.mean(window)
+
+        # Append the sma to the detrended time series
+        sma_series = np.append(sma_series, sma)
+
+    # Now, subtract the detrended time series from the original time series
+    detrended_time_series = time_series[window_length//2:-window_length//2] - sma_series
+
+    # Return the detrende time series and its variance
+    return detrended_time_series.tolist(), np.var(detrended_time_series)
+

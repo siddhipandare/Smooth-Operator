@@ -4,7 +4,7 @@ from flask import Flask, request
 from flask import render_template
 import json
 
-from utils import fetch_time_series, get_all_datasets, get_entropy_series, get_snr_series
+from utils import fetch_time_series, get_all_datasets, get_entropy_series, get_snr_series, get_detrended_time_series
 
 filename_to_type = {
     'taxi.csv': 'csv',
@@ -16,6 +16,7 @@ filename_to_type = {
     'stock_tsla_price.json': 'json',
     'power.csv': 'csv',
     'sine.csv': 'csv',
+    'HF_mono_stat.csv': 'csv',
 }
 
 app = Flask(__name__)
@@ -56,6 +57,19 @@ def fetch_running_entropy():
 
     # Return the running snr list as a JSON response
     return json.dumps({"entropy_time_series": running_entropy_list})
+
+@app.route('/fetch_detrended_time_series', methods=['POST'])
+def fetch_detrended_time_series():
+    # Get the time series from the request
+    time_series = request.get_json()['time_series']
+    # Get the window length from the request
+    window_length = request.get_json()['window_length']
+
+    # Get the detrended time series
+    detrended_time_series, variance = get_detrended_time_series(time_series, int(0.1 * len(time_series)))
+
+    # Return the running detrended list as a JSON response
+    return json.dumps({"detrended_time_series": detrended_time_series, "variance": variance})
 
 if __name__ == '__main__':
     # Run on port 5000 with debug mode

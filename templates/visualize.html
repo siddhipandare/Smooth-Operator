@@ -18,6 +18,8 @@
         <div id="dataset_dropdown">
             <h3>Select dataset</h3>
         </div>
+        <div id="variance">
+        </div>
     </body>
     <script>
         // Fetch time series from jinja2
@@ -82,7 +84,7 @@
             .call(d3.axisBottom(x));
 
 
-        // Add the Y axis with labels
+        // Add the Y axis with labels. Domain should be minimum and maximum value of time_series
         var y = d3.scaleLinear()
             .domain([-3, 3])
             .range([ height, 0]);
@@ -228,6 +230,37 @@
                         .y(function(d) { return y(d) })
                         )
             });
+
+            // Make post call with fetch API to localhost:5000/fetch_detrended_time_series with smoothed_time_series in body with key "time_series" and window_length in body with key "window_length"
+            // When response is received, store response in detrended_time_series and put it in the chart
+            fetch("http://localhost:5000/fetch_detrended_time_series", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({"time_series": smoothed_time_series, "window_length": window_length})
+            })
+            .then(response => response.json())
+            .then(data => {
+                detrended_time_series = data["detrended_time_series"];
+                // Update chart
+                // Add the line for detrended time series
+                svg.append("path")
+                    .datum(detrended_time_series)
+                    .attr("fill", "none")
+                    .attr("stroke", "brown")
+                    .attr("stroke-width", 1.5)
+                    .attr("d", d3.line()
+                        .x(function(d, i) { return x(i) })
+                        .y(function(d) { return y(d) })
+                        )
+                
+                variance = data["variance"];
+                // Print variance on an html element after the chart
+                d3.select("#variance").text("Variance: " + variance);
+
+            });
+
             // Clear chart
             d3.select("#chart").select("svg").remove();
 
@@ -241,13 +274,24 @@
                 .attr("transform", "translate(0," + height + ")")
                 .call(d3.axisBottom(x));
 
+            
+            var min_value = d3.min(smoothed_time_series);
+            var max_value = d3.max(smoothed_time_series);
 
             // Add the Y axis with labels
             var y = d3.scaleLinear()
-                .domain([-3, 3])
+                .domain([min_value, max_value])
                 .range([ height, 0]);
             svg.append("g")
                 .call(d3.axisLeft(y));
+
+            // // Renormalize the smoothed time series with Z-score
+            // var mean = d3.mean(smoothed_time_series);
+            // var std = d3.deviation(smoothed_time_series);
+            // var renormalized_time_series = [];
+            // for (var i = 0; i < smoothed_time_series.length; i++) {
+            //     renormalized_time_series.push((smoothed_time_series[i] - mean) / std);
+            // }
 
             // Add the line
             svg.append("path")
