@@ -26,11 +26,14 @@ def fetch_time_series(filename, type):
     Fetch time series data from file depending on type
     '''
     if type == 'csv':
-        dataframe = pd.read_csv(os.path.join(BASE_DIR, filename))
+        # Find the full path of the filename in the USER_STUDY_1_DIR
+        full_path = glob.glob(os.path.join(USER_STUDY_1_DIR, '**', filename), recursive=True)[0]
+        dataframe = pd.read_csv(full_path)
         # Get 'value' column
         time_series = dataframe['value'].values
     elif type == 'json':
-        with open(os.path.join(BASE_DIR, filename)) as f:
+        full_path = glob.glob(os.path.join(USER_STUDY_1_DIR, '**', filename), recursive=True)[0]
+        with open(full_path) as f:
             data = json.load(f)
         time_series = data
     else:
@@ -232,9 +235,11 @@ def smooth_gaussian(time_series, window_length):
     '''
     time_series = np.array(time_series)
     smoothed_series = np.array([])
-    kernel = gaussian_kernel(window_length, sigma=window_length//2)
-
-    # Convolve the time series with the kernel
+    
+    # Apply a gaussian filter to the time series
+    kernel = gaussian_kernel(window_length, window_length//2)
+    # Convolve but only keep the middle part
+    # smoothed_series = np.convolve(time_series, kernel, mode='valid')
     smoothed_series = np.convolve(time_series, kernel, mode='same')
 
     return smoothed_series.tolist()
@@ -296,24 +301,66 @@ def process(time_series, smoothing_technique, statistical_measure):
     # Check all window sizes from 1 to 30% of the length of the time series
     # and keep track of the window size that gives the best result
 
-    best_window_size = 1
-    best_statistical_measure = statistical_measure_to_function[statistical_measure](time_series)
+    alpha = 0.5
+
+    statistical_measures_array = np.array([])
+    std_first_differences_array = np.array([])
+    scores_array = np.array([])
+    statistical_measures_array = np.append(statistical_measures_array, statistical_measure_to_function[statistical_measure](time_series))
+    std_first_differences_array = np.append(std_first_differences_array, np.std(np.diff(time_series)))
+    scores_array = np.append(scores_array, alpha * statistical_measures_array[0] + (1 - alpha) * std_first_differences_array[0])
+
+
 
     for window_size in range(2, int(len_time_series * 0.3)):
-        # Smooth the time series
+        # Get smoothed time series
         smoothed_time_series = smoothing_technique_to_function[smoothing_technique](time_series, window_size)
 
-        # Get the statistical measure of the smoothed time series
-        smoothed_time_series_statistical_measure = statistical_measure_to_function[statistical_measure](smoothed_time_series)
+        # Get the statistical measure
+        statistical_measure_value = statistical_measure_to_function[statistical_measure](smoothed_time_series)
 
-        # Check if the statistical measure of the smoothed time series is better than the best one
-        if statistical_measure_to_comparator_function[statistical_measure](smoothed_time_series_statistical_measure, best_statistical_measure):
-            best_window_size = window_size
-            best_statistical_measure = smoothed_time_series_statistical_measure
+        # Get the standard deviation of the first differences
+        first_differences = np.diff(smoothed_time_series)
 
-    # Smooth the time series with the best window size
+        std_first_differences = np.std(first_differences)
+
+        # Append the values to the arrays
+        statistical_measures_array = np.append(statistical_measures_array, statistical_measure_value)
+        std_first_differences_array = np.append(std_first_differences_array, std_first_differences)
+
+    if statistical_measure == 'entropy':
+        statistical_measures_array = -statistical_measures_array
+
+    std_first_differences_array = -std_first_differences_array
+
+    # Normalize statistical measures array from 0 to 1
+    statistical_measures_array = (statistical_measures_array - np.min(statistical_measures_array)) / (np.max(statistical_measures_array) - np.min(statistical_measures_array))
+
+    # Normalize standard deviations of first differences array from 0 to 1
+    std_first_differences_array = (std_first_differences_array - np.min(std_first_differences_array)) / (np.max(std_first_differences_array) - np.min(std_first_differences_array))
+
+    print(statistical_measures_array)
+    print(std_first_differences_array)
+
+    # Calculate the score for each window size
+    scores_array = alpha * statistical_measures_array + (1 - alpha) * std_first_differences_array
+
+    # Get the window size that gives the best result
+    best_window_size = np.argmax(scores_array) + 1
+
+
+    # Get the smoothed time series
     smoothed_time_series = smoothing_technique_to_function[smoothing_technique](time_series, best_window_size)
 
+    # Print the score for each window size
+    # for i in range(len(scores_array)):
+    #     print('Window size: {}, Score: {}'.format(i+1, scores_array[i]))
+
+    # Print the score for the best window size
+    print('Best window size: {}, Score: {}'.format(best_window_size, scores_array[best_window_size-1]))
+
+    # Convert best_window_size to an int from a numpy.int64
+    best_window_size = int(best_window_size)
     return smoothed_time_series, best_window_size
 
         
