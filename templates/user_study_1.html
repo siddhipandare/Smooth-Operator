@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <!-- Fetch d3 -->
+        <script src="https://d3js.org/d3.v4.min.js"></script>
+        <!-- Fetch jQuery -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <!-- Fetch Bootstrap -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    </head>
+    <body style="padding:5%; text-align: center;">
+        <div id="chart">
+        </div>
+        <div id="oversmoothing_threshold"></div>
+        <div id="best_window_size"></div>
+        <div id="dataset_dropdown">
+            <h3>Select dataset</h3>
+        </div>
+        <div id="smoothing_technique_dropdown">
+            <h3>Select smoothing technique</h3>
+        </div>
+        <div id="statistical_measure_dropdown">
+            <h3>Select statistical measure</h3>
+        </div>
+
+        <div id="Update button">
+            <button type="button" class="btn btn-primary" onclick="updateChart()">Update</button>
+        </div>
+    </body>
+    <script>
+        var smoothing_techniques = {{ smoothing_techniques|tojson }};
+        var statistical_measures = {{ statistical_measures|tojson }};
+        var datasets = {{ datasets|tojson }};
+
+        // set the dimensions and margins of the graph
+        var margin = {top: 10, right: 30, bottom: 30, left: 60},
+            width = 900 - margin.left - margin.right,
+            height = 500 - margin.top - margin.bottom;
+
+        // append the svg object to the body of the page
+        var svg = d3.select("#chart")
+            .append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+                .attr("transform",
+                    "translate(" + margin.left + "," + margin.top + ")");
+
+
+        // Populate dataset list as a dropdown
+        var dataset_dropdown = d3.select("#dataset_dropdown")
+            .append("select")
+            .attr("id", "dataset_dropdown_select")
+            .on("change", function(d) {
+                var selected_dataset = d3.select(this).property("value");
+                // Get the selected smoothing technique
+                var selected_smoothing_technique = d3.select("#smoothing_technique_dropdown_select").property("value");
+                // Get the selected statistical measure
+                var selected_statistical_measure = d3.select("#statistical_measure_dropdown_select").property("value");
+                // Update the chart
+                // update_chart(selected_dataset, selected_smoothing_technique, selected_statistical_measure);
+            });
+        // Add options to dataset dropdown
+        dataset_dropdown.selectAll("option")
+            .data(datasets)
+            .enter()
+            .append("option")
+            .attr("value", function(d) { return d; })
+            .text(function(d) { return d; });
+        // Set default value of dropdown to none
+        dataset_dropdown.property("value", "none");
+
+        // Populate smoothing technique list as a dropdown
+        var smoothing_technique_dropdown = d3.select("#smoothing_technique_dropdown")
+            .append("select")
+            .attr("id", "smoothing_technique_dropdown_select")
+            .on("change", function(d) {
+                var selected_smoothing_technique = d3.select(this).property("value");
+                // Get the selected dataset
+                var selected_dataset = d3.select("#dataset_dropdown_select").property("value");
+                // Get the selected statistical measure
+                var selected_statistical_measure = d3.select("#statistical_measure_dropdown_select").property("value");
+                // Update the chart
+                // update_chart(selected_dataset, selected_smoothing_technique, selected_statistical_measure);
+            });
+        // Add options to smoothing technique dropdown
+        smoothing_technique_dropdown.selectAll("option")
+            .data(smoothing_techniques)
+            .enter()
+            .append("option")
+            .attr("value", function(d) { return d; })
+            .text(function(d) { return d; });
+        // Set default value of dropdown to none
+        smoothing_technique_dropdown.property("value", "none");
+
+        // Populate statistical measure list as a dropdown
+        var statistical_measure_dropdown = d3.select("#statistical_measure_dropdown")
+            .append("select")
+            .attr("id", "statistical_measure_dropdown_select")
+            .on("change", function(d) {
+                var selected_statistical_measure = d3.select(this).property("value");
+                // Get the selected dataset
+                var selected_dataset = d3.select("#dataset_dropdown_select").property("value");
+                // Get the selected smoothing technique
+                var selected_smoothing_technique = d3.select("#smoothing_technique_dropdown_select").property("value");
+                // Update the chart
+                // update_chart(selected_dataset, selected_smoothing_technique, selected_statistical_measure);
+            });
+
+        // Add options to statistical measure dropdown
+        statistical_measure_dropdown.selectAll("option")
+            .data(statistical_measures)
+            .enter()
+            .append("option")
+            .attr("value", function(d) { return d; })
+            .text(function(d) { return d; });
+        // Set default value of dropdown to none
+        statistical_measure_dropdown.property("value", "none");
+
+        function updateChart() {
+            // Get the selected dataset
+            var selected_dataset = d3.select("#dataset_dropdown_select").property("value");
+            // Get the selected smoothing technique
+            var selected_smoothing_technique = d3.select("#smoothing_technique_dropdown_select").property("value");
+            // Get the selected statistical measure
+            var selected_statistical_measure = d3.select("#statistical_measure_dropdown_select").property("value");
+            // Update the chart
+            update_chart(selected_dataset, selected_smoothing_technique, selected_statistical_measure);
+        }
+
+        // Function to update the chart
+        function update_chart(selected_dataset, selected_smoothing_technique, selected_statistical_measure) {
+                
+
+            console.log("Updating chart with dataset: " + selected_dataset + ", smoothing technique: " + selected_smoothing_technique + ", statistical measure: " + selected_statistical_measure);
+            // Raise alert if no dataset is selected
+            if (selected_dataset.length == 0) {
+                window.alert("Please select a dataset");
+                return;
+            }
+            // Raise window.alert if no smoothing technique is selected
+            if (selected_smoothing_technique.length == 0) {
+                window.alert("Please select a smoothing technique");
+                return;
+            }
+            // Raise window.alert if no statistical measure is selected
+            if (selected_statistical_measure.length == 0) {
+                window.alert("Please select a statistical measure");
+                return;
+            }
+
+            // Use fetch api to send a GET request to the server with dataset, smoothing technique and statistical measure as parameters
+            // Once the response is received, update the chart
+            // Before fetch call is made, show a throbber. The throbber is present in throbber.gif
+            d3.select("#chart").append("img")
+                .attr("src", "https://i.gifer.com/8CLV.gif")
+                .attr("id", "throbber");
+            fetch('http://localhost:5000/get_data?dataset=' + selected_dataset + '&smoothing_technique=' + selected_smoothing_technique + '&statistical_measure=' + selected_statistical_measure)
+                .then(function(response) {
+                    return response.json();
+                })
+                .then(function(data) {
+                    // Remove the throbber
+                    d3.select("#throbber").remove();
+
+                    var time_series = data["time_series"];
+                    var smoothed_time_series = data["smoothed_time_series"];
+                    var oversmoothing_threshold = parseInt(0.3 * time_series.length);
+
+                    var best_window_size = data["best_window_size"];
+
+                    // Display the oversmoothing threshold and best window size
+                    d3.select("#oversmoothing_threshold").text("Oversmoothing threshold: " + oversmoothing_threshold);
+                    d3.select("#best_window_size").text("Best window size: " + best_window_size);
+
+                    console.log("Time series: " + time_series);
+                    console.log("Smoothed time series: " + smoothed_time_series);
+                    
+                    var svg = d3.select("#chart");
+                    svg.selectAll("*").remove();
+
+                    // Set the dimensions and margins of the graph
+                    var margin = {top: 10, right: 30, bottom: 30, left: 60},
+                        width = 900 - margin.left - margin.right,
+                        height = 500 - margin.top - margin.bottom;
+
+                    // Append the svg object to the body of the page
+                    var svg = d3.select("#chart")
+                        .append("svg")
+                        .attr("width", width + margin.left + margin.right)
+                        .attr("height", height + margin.top + margin.bottom)
+                        .append("g")
+                        .attr("transform",
+                            "translate(" + margin.left + "," + margin.top + ")");
+                    
+                    // Add the X axis with labels
+                    var x = d3.scaleLinear()
+                        .domain([0, time_series.length])
+                        .range([ 0, width ]);
+                    svg.append("g")
+                        .attr("transform", "translate(0," + height + ")")
+                        .call(d3.axisBottom(x));
+
+                    
+                    var min_value = d3.min(smoothed_time_series);
+                    var max_value = d3.max(smoothed_time_series);
+
+                    // Add the Y axis with labels
+                    var y = d3.scaleLinear()
+                        .domain([min_value, max_value])
+                        .range([ height, 0]);
+                    svg.append("g")
+                        .call(d3.axisLeft(y));
+
+                    // Add the line for the original time series
+                    svg.append("path")
+                        .datum(time_series)
+                        .attr("fill", "none")
+                        .attr("stroke", "steelblue")
+                        .attr("stroke-width", 1.5)
+                        .attr("d", d3.line()
+                            .x(function(d, i) { return x(i) })
+                            .y(function(d) { return y(d) })
+                        );
+
+                    // Add the line for the smoothed time series
+                    svg.append("path")
+                        .datum(smoothed_time_series)
+                        .attr("fill", "none")
+                        .attr("stroke", "brown")
+                        .attr("stroke-width", 1.5)
+                        .attr("d", d3.line()
+                            .x(function(d, i) { return x(i) })
+                            .y(function(d) { return y(d) })
+                            )
+                    
+                });
+            
+            
+        }
+
+
+
+    </script>
+</html>

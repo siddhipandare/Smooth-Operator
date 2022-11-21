@@ -4,7 +4,7 @@ from flask import Flask, request
 from flask import render_template
 import json
 
-from utils import fetch_time_series, get_all_datasets, get_entropy_series, get_snr_series, get_detrended_time_series
+from utils import fetch_time_series, get_all_datasets, get_entropy_series, get_snr_series, get_detrended_time_series, get_all_datasets_user_study_1, process, smoothing_techniques, statistical_measures
 
 filename_to_type = {
     'taxi.csv': 'csv',
@@ -17,6 +17,16 @@ filename_to_type = {
     'power.csv': 'csv',
     'sine.csv': 'csv',
     'HF_mono_stat.csv': 'csv',
+    'gasoline1.csv': 'csv',
+    'gasoline2.csv': 'csv',
+    'climate_jfk_tmax.json': 'json',
+    'climate_lax_awnd.json': 'json',
+    'monthly_beer_austria.csv': 'csv',
+    'chi_homicide_weekly.json': 'json',
+    'climate_sea_prcp.json': 'json',
+    'eeg_chan10_2500.json': 'json',
+    'stock_bac_volume.json': 'json',
+    'usa_flights_weekly.json': 'json',
 }
 
 app = Flask(__name__)
@@ -70,6 +80,23 @@ def fetch_detrended_time_series():
 
     # Return the running detrended list as a JSON response
     return json.dumps({"detrended_time_series": detrended_time_series, "variance": variance})
+
+
+
+@app.route('/user_study_1', methods=['GET'])
+def user_study_1():
+    return render_template('user_study_1.html', smoothing_techniques=smoothing_techniques, statistical_measures=statistical_measures, datasets = get_all_datasets_user_study_1())
+
+@app.route('/get_data', methods=['GET'])
+def get_data():
+    print("Request received")
+    dataset = request.args.get('dataset')
+    smoothing_technique = request.args.get('smoothing_technique')
+    statistical_measure = request.args.get('statistical_measure')
+    time_series = fetch_time_series(dataset, type=filename_to_type[dataset])
+    smoothed_time_series, best_window_size = process(time_series, smoothing_technique, statistical_measure)
+
+    return json.dumps({"time_series": time_series, "smoothed_time_series": smoothed_time_series, "best_window_size": best_window_size})
 
 if __name__ == '__main__':
     # Run on port 5000 with debug mode
