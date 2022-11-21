@@ -3,6 +3,7 @@ import numpy as np
 import os
 import glob
 import json
+import scipy.fftpack as scifft
 
 BASE_DIR = './8803-MDS-Project/datasets'
 USER_STUDY_1_DIR = './8803-MDS-Project/datasets_user_study_1'
@@ -259,18 +260,30 @@ def smooth_exponential(time_series, window_length):
 
     return exponential_smoothed_series.tolist()
 
-def smooth_low_pass(time_series, window_length):
+""" def smooth_low_pass(time_series, window_length):
     # Use a low pass filter to smooth the time series
     time_series = np.array(time_series)
     low_pass_smoothed_series = np.array([])
-
+    a = 0.7
     # Low pass filter
     for i in range(len(time_series)):
         if i == 0:
             low_pass_smoothed_series = np.append(low_pass_smoothed_series, time_series[i])
         else:
-            low_pass_smoothed_series = np.append(low_pass_smoothed_series, 0.5 * time_series[i] + 0.5 * low_pass_smoothed_series[i-1])
+            low_pass_smoothed_series = np.append(low_pass_smoothed_series, a * time_series[i] + (1-a) * low_pass_smoothed_series[i-1])
 
+    return low_pass_smoothed_series.tolist() """
+
+
+def smooth_low_pass(time_series, window_length):
+    # Use a low pass filter to smooth the time series
+    time_series = np.array(time_series)
+    low_pass_smoothed_series = np.array([])
+    # using window size as alias for level of filtering
+    cutoff_freq = window_length
+    fft = scifft.rfft(time_series)
+    fft[cutoff_freq:] = 0
+    low_pass_smoothed_series = scifft.irfft(fft)
     return low_pass_smoothed_series.tolist()
 
 smoothing_technique_to_function = {
