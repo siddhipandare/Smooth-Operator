@@ -7,6 +7,8 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <!-- Fetch Bootstrap -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <!-- Fetch saveSvgAsPng.js from localhost -->
+        <script src="http://localhost:5000/static/saveSvgAsPng.js"></script>
     </head>
     <body style="padding:5%; text-align: center;">
         <div id="chart">
@@ -25,6 +27,10 @@
 
         <div id="Update button">
             <button type="button" class="btn btn-primary" onclick="updateChart()">Update</button>
+        </div>
+
+        <div id="Generate button">
+            <button type="button" class="btn btn-primary" onclick="generate()">Generate</button>
         </div>
     </body>
     <script>
@@ -183,9 +189,9 @@
                     svg.selectAll("*").remove();
 
                     // Set the dimensions and margins of the graph
-                    var margin = {top: 10, right: 30, bottom: 30, left: 60},
-                        width = 900 - margin.left - margin.right,
-                        height = 500 - margin.top - margin.bottom;
+                    var margin = {top: 0, right: 0, bottom: 0, left: 0},
+                        width = 800,
+                        height = 750;
 
                     // Append the svg object to the body of the page
                     var svg = d3.select("#chart")
@@ -215,16 +221,18 @@
                     svg.append("g")
                         .call(d3.axisLeft(y));
 
-                    // Add the line for the original time series
-                    svg.append("path")
-                        .datum(time_series)
-                        .attr("fill", "none")
-                        .attr("stroke", "steelblue")
-                        .attr("stroke-width", 1.5)
-                        .attr("d", d3.line()
-                            .x(function(d, i) { return x(i) })
-                            .y(function(d) { return y(d) })
-                        );
+                    // Add the line for the original time series. Keep transparency at 0.5
+                    // svg.append("path")
+                    //     .datum(time_series)
+                    //     .attr("fill", "none")
+                    //     .attr("stroke", "steelblue")
+                    //     .attr("stroke-width", 1.5)
+                    //     .attr("d", d3.line()
+                    //         .x(function(d, i) { return x(i) })
+                    //         .y(function(d) { return y(d) })
+                    //     )
+                    //     .style("opacity", 0.15);
+
 
                     // Add the line for the smoothed time series
                     svg.append("path")
@@ -236,10 +244,58 @@
                             .x(function(d, i) { return x(i) })
                             .y(function(d) { return y(d) })
                             )
-                    
+
+                    // Hide the Y axis and the X axis
+                    svg.selectAll(".domain").remove();
+                    svg.selectAll(".tick line").attr("stroke-opacity", 0);
+                    svg.selectAll(".tick text").attr("fill", "white");
+
+                    // Add a black border to the chart
+                    svg.append("rect")
+                        .attr("x", 0)
+                        .attr("y", 0)
+                        .attr("width", width)
+                        .attr("height", height)
+                        .style("stroke", "black")
+                        .style("fill", "none")
+                        .style("stroke-width", 1);
+
+                    // Save the chart as a png image with white background. Save the image as dataset_smoothing_technique_statistical_measure.png
+                    saveSvgAsPng(document.getElementById("chart").getElementsByTagName("svg")[0], selected_dataset + "_" + selected_smoothing_technique + "_" + selected_statistical_measure + ".png", {backgroundColor: "white"});
                 });
             
             
+        }
+
+        async function sleepy() {
+            await sleep(20000);
+            return;
+        }
+
+        function generate() {
+            // For all datasets, smoothing techniques and statistical measures, generate a button to call the update_chart function.
+            // Add all buttons for a dataset on same row
+            var datasets = {{ datasets | tojson }};
+            var smoothing_techniques = {{ smoothing_techniques | tojson }};
+            var statistical_measures = {{ statistical_measures | tojson }};
+
+            for (var i = 0; i < datasets.length; i++) {
+                for (var j = 0; j < smoothing_techniques.length; j++) {
+                    for (var k = 0; k < statistical_measures.length; k++) {
+                        var button = document.createElement("button");
+                        button.innerHTML = datasets[i] + " " + smoothing_techniques[j] + " " + statistical_measures[k];
+                        button.setAttribute("id", datasets[i] + "_" + smoothing_techniques[j] + "_" + statistical_measures[k]);
+                        button.setAttribute("class", "button");
+                        button.setAttribute("onclick", "update_chart('" + datasets[i] + "', '" + smoothing_techniques[j] + "', '" + statistical_measures[k] + "')");
+                        document.body.appendChild(button);
+                        // On click, button should change color to indicate that the chart is being updated
+                        button.addEventListener("click", function() {
+                            this.style.backgroundColor = "red";
+                        });
+                    }
+                }
+            }
+
         }
 
 
