@@ -1,26 +1,23 @@
 import os
 # Import the pdf library
 from fpdf import FPDF
+import random
 
 
 RESULTS_DIR = './results'
 annotated = True
+
+# Seed the random number generator
+random.seed(0)
 
 def generate_pdf(dataset, filenames):
     '''
     dataset: string, name of the pdf file
     filenames: list of strings, filepaths to the images to include in the pdf
     '''
-    # Sort filenames if annotated
+    # Shuffle filenames if annotated
     if annotated:
-        filenames.sort()
-        # Reshape 1x15 list to 5x3 list
-        filenames = [filenames[i:i+3] for i in range(0, len(filenames), 3)]
-        # Transpose the list
-        filenames = list(map(list, zip(*filenames)))
-        # Flatten the list
-        filenames = [item for sublist in filenames for item in sublist]
-
+        random.shuffle(filenames)
 
     # Make every 2nd image
     # Create a PDF with one page in landscape mode
