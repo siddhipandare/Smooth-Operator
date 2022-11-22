@@ -4,7 +4,7 @@ from fpdf import FPDF
 
 
 RESULTS_DIR = './results'
-annotated = False
+annotated = True
 
 def generate_pdf(dataset, filenames):
     '''
@@ -43,11 +43,16 @@ def generate_pdf(dataset, filenames):
                 filename = filename[len(dataset) + 5:]
             else:
                 filename = filename[len(dataset) + 6:]
-            pdf.set_font('Arial', 'B', 8)
-            pdf.text(x=(i % 5) * 60, y= 30 + (i // 5) * 60, txt=filename)
+            pdf.set_font('Arial', 'B', 10)
+            #pdf.text(x=(i % 5) * 60, y= 30 + (i // 5) * 60, txt=filename)
+           
+            pdf.text(x=(i % 5) * 60, y= 30 + (i // 5) * 60, txt=str(i+1))
+            
     
     # Save the pdf to "pdfs" directory
-    pdf.output(os.path.join('pdfs' + ('_annotated' if annotated else ''), '{}.pdf'.format(dataset)))
+    #pdf.output(os.path.join('pdfs' + ('_annotated' if annotated else ''), '{}.pdf'.format(dataset)))
+    pdf.output(os.path.join('pdfs' + ('_userstudy_numbered' if annotated else ''), '{}.pdf'.format(dataset)))
+
 
 
 def main():
