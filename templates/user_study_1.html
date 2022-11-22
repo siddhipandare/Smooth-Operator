@@ -266,16 +266,15 @@
             
             
         }
-
-        async function sleepy() {
-            await sleep(20000);
-            return;
-        }
-
         function generate() {
+
             // For all datasets, smoothing techniques and statistical measures, generate a button to call the update_chart function.
             // Add all buttons for a dataset on same row
             var datasets = {{ datasets | tojson }};
+
+            // Sort datasets alphabetically
+            datasets.sort();
+
             var smoothing_techniques = {{ smoothing_techniques | tojson }};
             var statistical_measures = {{ statistical_measures | tojson }};
 
