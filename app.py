@@ -38,7 +38,7 @@ def hello_world():
 @app.route('/visualize/<filename>')
 def visualize(filename):
     time_series = fetch_time_series(filename, type=filename_to_type[filename])
-    dataset_list = get_all_datasets()
+    dataset_list = get_all_datasets_user_study_1()
     return render_template('visualize.html', time_series=time_series, dataset_list=dataset_list)
 
 # Create a new route to handle POST requests

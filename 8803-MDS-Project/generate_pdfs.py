@@ -19,6 +19,17 @@ def generate_pdf(dataset, filenames):
     if annotated:
         random.shuffle(filenames)
 
+    # Create mapping from index to filename
+    index_to_filename = {}
+    for i, filename in enumerate(filenames):
+        index_to_filename[i] = filename
+
+    # In a file named dataset_mapping.txt, write the mapping from index to filename
+    with open(f'{dataset}_mapping.txt', 'w') as f:
+        for index, filename in index_to_filename.items():
+            f.write(f'{index} {filename}')
+
+
     # Make every 2nd image
     # Create a PDF with one page in landscape mode
     # Add 15 images in a 3x5 grid on the page
