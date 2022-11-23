@@ -1,0 +1,15 @@
+0 taxi.csv_gaussian_kurtosis.png 
+1 taxi.csv_low_pass_filter_entropy.png 
+2 taxi.csv_low_pass_filter_kurtosis.png 
+3 taxi.csv_median_entropy.png 
+4 taxi.csv_low_pass_filter_signal to noise ratio.png 
+5 taxi.csv_mean_kurtosis.png 
+6 taxi.csv_median_signal to noise ratio.png 
+7 taxi.csv_exponential_smoothing_signal to noise ratio.png 
+8 taxi.csv_gaussian_entropy.png 
+9 taxi.csv_mean_signal to noise ratio.png 
+10 taxi.csv_mean_entropy.png 
+11 taxi.csv_exponential_smoothing_entropy.png 
+12 taxi.csv_exponential_smoothing_kurtosis.png 
+13 taxi.csv_median_kurtosis.png 
+14 taxi.csv_gaussian_signal to noise ratio.png 

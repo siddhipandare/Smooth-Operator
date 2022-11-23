@@ -1,0 +1,15 @@
+0 nz_tourist_monthly.json_low_pass_filter_entropy.png 
+1 nz_tourist_monthly.json_low_pass_filter_signal to noise ratio.png 
+2 nz_tourist_monthly.json_exponential_smoothing_entropy.png 
+3 nz_tourist_monthly.json_median_kurtosis.png 
+4 nz_tourist_monthly.json_exponential_smoothing_signal to noise ratio.png 
+5 nz_tourist_monthly.json_gaussian_kurtosis.png 
+6 nz_tourist_monthly.json_gaussian_entropy.png 
+7 nz_tourist_monthly.json_mean_entropy.png 
+8 nz_tourist_monthly.json_mean_signal to noise ratio.png 
+9 nz_tourist_monthly.json_exponential_smoothing_kurtosis.png 
+10 nz_tourist_monthly.json_gaussian_signal to noise ratio.png 
+11 nz_tourist_monthly.json_median_entropy.png 
+12 nz_tourist_monthly.json_mean_kurtosis.png 
+13 nz_tourist_monthly.json_median_signal to noise ratio.png 
+14 nz_tourist_monthly.json_low_pass_filter_kurtosis.png 

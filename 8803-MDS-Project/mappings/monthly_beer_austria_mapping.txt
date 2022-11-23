@@ -1,0 +1,15 @@
+0 monthly_beer_austria.csv_exponential_smoothing_entropy.png 
+1 monthly_beer_austria.csv_gaussian_signal to noise ratio.png 
+2 monthly_beer_austria.csv_exponential_smoothing_signal to noise ratio.png 
+3 monthly_beer_austria.csv_low_pass_filter_kurtosis.png 
+4 monthly_beer_austria.csv_mean_entropy.png 
+5 monthly_beer_austria.csv_exponential_smoothing_kurtosis.png 
+6 monthly_beer_austria.csv_median_kurtosis.png 
+7 monthly_beer_austria.csv_gaussian_entropy.png 
+8 monthly_beer_austria.csv_gaussian_kurtosis.png 
+9 monthly_beer_austria.csv_median_entropy.png 
+10 monthly_beer_austria.csv_low_pass_filter_entropy.png 
+11 monthly_beer_austria.csv_mean_kurtosis.png 
+12 monthly_beer_austria.csv_low_pass_filter_signal to noise ratio.png 
+13 monthly_beer_austria.csv_mean_signal to noise ratio.png 
+14 monthly_beer_austria.csv_median_signal to noise ratio.png 

@@ -1,0 +1,15 @@
+0 eeg_chan10_2500.json_low_pass_filter_entropy.png 
+1 eeg_chan10_2500.json_mean_signal to noise ratio.png 
+2 eeg_chan10_2500.json_mean_kurtosis.png 
+3 eeg_chan10_2500.json_median_kurtosis.png 
+4 eeg_chan10_2500.json_exponential_smoothing_entropy.png 
+5 eeg_chan10_2500.json_median_signal to noise ratio.png 
+6 eeg_chan10_2500.json_gaussian_kurtosis.png 
+7 eeg_chan10_2500.json_gaussian_signal to noise ratio.png 
+8 eeg_chan10_2500.json_mean_entropy.png 
+9 eeg_chan10_2500.json_exponential_smoothing_kurtosis.png 
+10 eeg_chan10_2500.json_low_pass_filter_kurtosis.png 
+11 eeg_chan10_2500.json_low_pass_filter_signal to noise ratio.png 
+12 eeg_chan10_2500.json_exponential_smoothing_signal to noise ratio.png 
+13 eeg_chan10_2500.json_median_entropy.png 
+14 eeg_chan10_2500.json_gaussian_entropy.png 

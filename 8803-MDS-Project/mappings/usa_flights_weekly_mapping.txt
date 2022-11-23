@@ -1,0 +1,15 @@
+0 usa_flights_weekly.json_mean_signal to noise ratio.png 
+1 usa_flights_weekly.json_mean_kurtosis.png 
+2 usa_flights_weekly.json_gaussian_kurtosis.png 
+3 usa_flights_weekly.json_gaussian_entropy.png 
+4 usa_flights_weekly.json_gaussian_signal to noise ratio.png 
+5 usa_flights_weekly.json_median_signal to noise ratio.png 
+6 usa_flights_weekly.json_median_entropy.png 
+7 usa_flights_weekly.json_low_pass_filter_entropy.png 
+8 usa_flights_weekly.json_exponential_smoothing_kurtosis.png 
+9 usa_flights_weekly.json_mean_entropy.png 
+10 usa_flights_weekly.json_median_kurtosis.png 
+11 usa_flights_weekly.json_low_pass_filter_kurtosis.png 
+12 usa_flights_weekly.json_low_pass_filter_signal to noise ratio.png 
+13 usa_flights_weekly.json_exponential_smoothing_entropy.png 
+14 usa_flights_weekly.json_exponential_smoothing_signal to noise ratio.png 

@@ -1,0 +1,15 @@
+0 climate_sea_prcp.json_median_entropy.png 
+1 climate_sea_prcp.json_gaussian_kurtosis.png 
+2 climate_sea_prcp.json_gaussian_entropy.png 
+3 climate_sea_prcp.json_mean_entropy.png 
+4 climate_sea_prcp.json_exponential_smoothing_signal to noise ratio.png 
+5 climate_sea_prcp.json_low_pass_filter_signal to noise ratio.png 
+6 climate_sea_prcp.json_median_signal to noise ratio.png 
+7 climate_sea_prcp.json_gaussian_signal to noise ratio.png 
+8 climate_sea_prcp.json_low_pass_filter_kurtosis.png 
+9 climate_sea_prcp.json_exponential_smoothing_entropy.png 
+10 climate_sea_prcp.json_mean_kurtosis.png 
+11 climate_sea_prcp.json_median_kurtosis.png 
+12 climate_sea_prcp.json_low_pass_filter_entropy.png 
+13 climate_sea_prcp.json_mean_signal to noise ratio.png 
+14 climate_sea_prcp.json_exponential_smoothing_kurtosis.png 

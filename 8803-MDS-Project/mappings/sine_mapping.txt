@@ -1,0 +1,15 @@
+0 sine.csv_low_pass_filter_entropy.png 
+1 sine.csv_median_kurtosis.png 
+2 sine.csv_low_pass_filter_signal to noise ratio.png 
+3 sine.csv_median_entropy.png 
+4 sine.csv_low_pass_filter_kurtosis.png 
+5 sine.csv_exponential_smoothing_entropy.png 
+6 sine.csv_mean_kurtosis.png 
+7 sine.csv_mean_entropy.png 
+8 sine.csv_exponential_smoothing_signal to noise ratio.png 
+9 sine.csv_gaussian_signal to noise ratio.png 
+10 sine.csv_gaussian_entropy.png 
+11 sine.csv_median_signal to noise ratio.png 
+12 sine.csv_exponential_smoothing_kurtosis.png 
+13 sine.csv_gaussian_kurtosis.png 
+14 sine.csv_mean_signal to noise ratio.png 

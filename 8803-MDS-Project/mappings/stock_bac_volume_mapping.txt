@@ -1,0 +1,15 @@
+0 stock_bac_volume.json_exponential_smoothing_signal to noise ratio.png 
+1 stock_bac_volume.json_gaussian_entropy.png 
+2 stock_bac_volume.json_gaussian_kurtosis.png 
+3 stock_bac_volume.json_low_pass_filter_entropy.png 
+4 stock_bac_volume.json_mean_signal to noise ratio.png 
+5 stock_bac_volume.json_gaussian_signal to noise ratio.png 
+6 stock_bac_volume.json_low_pass_filter_kurtosis.png 
+7 stock_bac_volume.json_median_signal to noise ratio.png 
+8 stock_bac_volume.json_exponential_smoothing_kurtosis.png 
+9 stock_bac_volume.json_median_entropy.png 
+10 stock_bac_volume.json_low_pass_filter_signal to noise ratio.png 
+11 stock_bac_volume.json_mean_kurtosis.png 
+12 stock_bac_volume.json_mean_entropy.png 
+13 stock_bac_volume.json_median_kurtosis.png 
+14 stock_bac_volume.json_exponential_smoothing_entropy.png 

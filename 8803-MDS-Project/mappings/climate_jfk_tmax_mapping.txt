@@ -1,0 +1,15 @@
+0 climate_jfk_tmax.json_gaussian_entropy.png 
+1 climate_jfk_tmax.json_median_signal to noise ratio.png 
+2 climate_jfk_tmax.json_mean_kurtosis.png 
+3 climate_jfk_tmax.json_low_pass_filter_entropy.png 
+4 climate_jfk_tmax.json_gaussian_signal to noise ratio.png 
+5 climate_jfk_tmax.json_exponential_smoothing_entropy.png 
+6 climate_jfk_tmax.json_low_pass_filter_kurtosis.png 
+7 climate_jfk_tmax.json_mean_signal to noise ratio.png 
+8 climate_jfk_tmax.json_median_entropy.png 
+9 climate_jfk_tmax.json_mean_entropy.png 
+10 climate_jfk_tmax.json_exponential_smoothing_kurtosis.png 
+11 climate_jfk_tmax.json_median_kurtosis.png 
+12 climate_jfk_tmax.json_gaussian_kurtosis.png 
+13 climate_jfk_tmax.json_exponential_smoothing_signal to noise ratio.png 
+14 climate_jfk_tmax.json_low_pass_filter_signal to noise ratio.png 

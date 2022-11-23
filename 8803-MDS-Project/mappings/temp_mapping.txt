@@ -1,0 +1,15 @@
+0 temp.csv_low_pass_filter_kurtosis.png 
+1 temp.csv_gaussian_entropy.png 
+2 temp.csv_gaussian_signal to noise ratio.png 
+3 temp.csv_exponential_smoothing_signal to noise ratio.png 
+4 temp.csv_median_kurtosis.png 
+5 temp.csv_mean_signal to noise ratio.png 
+6 temp.csv_median_entropy.png 
+7 temp.csv_gaussian_kurtosis.png 
+8 temp.csv_exponential_smoothing_kurtosis.png 
+9 temp.csv_mean_entropy.png 
+10 temp.csv_low_pass_filter_entropy.png 
+11 temp.csv_low_pass_filter_signal to noise ratio.png 
+12 temp.csv_exponential_smoothing_entropy.png 
+13 temp.csv_mean_kurtosis.png 
+14 temp.csv_median_signal to noise ratio.png 

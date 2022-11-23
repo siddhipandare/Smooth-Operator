@@ -1,0 +1,15 @@
+0 gasoline2.csv_median_entropy.png 
+1 gasoline2.csv_mean_signal to noise ratio.png 
+2 gasoline2.csv_gaussian_signal to noise ratio.png 
+3 gasoline2.csv_low_pass_filter_signal to noise ratio.png 
+4 gasoline2.csv_exponential_smoothing_kurtosis.png 
+5 gasoline2.csv_low_pass_filter_entropy.png 
+6 gasoline2.csv_mean_kurtosis.png 
+7 gasoline2.csv_low_pass_filter_kurtosis.png 
+8 gasoline2.csv_median_signal to noise ratio.png 
+9 gasoline2.csv_mean_entropy.png 
+10 gasoline2.csv_exponential_smoothing_entropy.png 
+11 gasoline2.csv_median_kurtosis.png 
+12 gasoline2.csv_gaussian_entropy.png 
+13 gasoline2.csv_exponential_smoothing_signal to noise ratio.png 
+14 gasoline2.csv_gaussian_kurtosis.png 

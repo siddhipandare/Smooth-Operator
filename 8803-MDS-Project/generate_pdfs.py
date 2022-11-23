@@ -25,9 +25,9 @@ def generate_pdf(dataset, filenames):
         index_to_filename[i] = filename
 
     # In a file named dataset_mapping.txt, write the mapping from index to filename
-    with open(f'{dataset}_mapping.txt', 'w') as f:
+    with open(f'{dataset}_mapping.txt ', 'w') as f:
         for index, filename in index_to_filename.items():
-            f.write(f'{index} {filename}')
+            f.write(f'{index} {filename} \n')
 
 
     # Make every 2nd image
