@@ -45,5 +45,11 @@ pip install flask
 ```
 
 On a browser open http://localhost:5000/user_study_1. At the interface choose the desired dataset, smoothing technique and statistical measure from the drop down menu and press `Update`. The smoothened plot along with best smoothing length and oversmoothing threshold will be displayed on the screen. The plot will also be downloaded in the `.png` format. It might take some time to generate some results due to the size of the datasets so please be patient. 
+The following snapshot captures our interface smoothing the *nz_tourist_monthly.json* dataset with a combination of gaussian and kurtosis.
+
+<p align="center">
+    <img src= "https://github.gatech.edu/storage/user/66957/files/6bd43fee-4043-49d4-bc3f-632be9e03380">
+</p>
+
 
 To generate and download all the smoothened plots for all the datasets in a quicker manner, click `Generate`. This will display buttons for all the 15 combinations of all the 12 datasets (15 * 12 buttons). The desired combination and dataset can then be chosen from here. 
