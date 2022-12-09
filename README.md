@@ -1,6 +1,6 @@
 # 8803-MDS-Project
 
-The repository is structured as follows:
+### Structure of the Repository:
 1. **app.py**: This is the main file that runs the application.
 The main routes of interest are :
     1. **/visualize/<filename.csv>:** This helps visualize a particular dataset with different levels of smoothing with a simple moving average. Eg. http://localhost:5000/visualize/taxi.csv. Here, the orange line is the running signal-to-noise ratio and the green line is the running information entropy of the dataset.
@@ -26,3 +26,24 @@ The main routes of interest are :
 14. **Entropy_SNR.ipynb:** This notebook contains the code we used for experimentation with different statistical measures to use in our project.
 15. **different_approach.ipynb:** This notebook contains the code we used for running our analysis on the running SNR / running entropy plots, a technique we couldn't explore further due to lack of time.
     
+## Steps to Reproduce the Results:
+
+To get the code from the source, clone this repository:
+```bash
+git clone https://github.gatech.edu/ssangle6/8803-MDS-Project.git
+```
+Open the repository and run the `app.py` file to access the web application.
+
+```bash
+cd 8803-MDS-Project
+python app.py
+```
+
+**NOTE:** Install flask before running the app using 
+```bash
+pip install flask
+```
+
+On a browser open http://localhost:5000/user_study_1. At the interface choose the desired dataset, smoothing technique and statistical measure from the drop down menu and press `Update`. The smoothened plot along with best smoothing length and oversmoothing threshold will be displayed on the screen. The plot will also be downloaded in the `.png` format. It might take some time to generate some results due to the size of the datasets so please be patient. 
+
+To generate and download all the smoothened plots for all the datasets in a quicker manner, click `Generate`. This will display buttons for all the 15 combinations of all the 12 datasets (15 * 12 buttons). The desired combination and dataset can then be chosen from here. 
